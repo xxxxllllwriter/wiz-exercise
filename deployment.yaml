@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wiz-exercise-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wiz-exercise
+  template:
+    metadata:
+      labels:
+        app: wiz-exercise
+    spec:
+      containers:
+      - name: wiz-exercise
+        image: wizregistry5174.azurecr.io/wiz-exercise:v1
+        ports:
+        - containerPort: 8080
+        env:
+        - name: MONGO_URI
+          value: "mongodb://wiz-mongo-vm:27017"  # あとでKubernetes内ネットワークに置き換える予定
+      imagePullSecrets:
+      - name: acr-auth
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wiz-exercise-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: wiz-exercise
+  ports:
+  - port: 80
+    targetPort: 8080
+
