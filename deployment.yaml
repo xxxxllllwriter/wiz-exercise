@@ -18,7 +18,7 @@ spec:
         ports:
         - containerPort: 8080
         env:
-        - name: MONGO_URI
+        - name: MONGODB_URI
           value: "mongodb://wiz-mongo-vm:27017"  # あとでKubernetes内ネットワークに置き換える予定
       imagePullSecrets:
       - name: acr-auth
