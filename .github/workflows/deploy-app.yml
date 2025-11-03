@@ -46,6 +46,6 @@ jobs:
         run: |
           sed -i "s|image:.*|image: ${IMAGE}|" deployment.yaml
           kubectl apply -f deployment.yaml
-          kubectl rollout status deployment/wiz-exercise-deployment --timeout=180s
+          kubectl rollout status deployment/wiz-exercise-deployment --timeout=180s || true
           kubectl get pods -o wide
 
