@@ -19,6 +19,7 @@ jobs:
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+          auth-type: service-principal
 
       # 3️⃣ AKSの認証情報を取得（あなたの環境用）
       - name: Get AKS credentials
