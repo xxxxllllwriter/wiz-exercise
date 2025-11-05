@@ -1,22 +1,43 @@
-name: IaC Deploy Simulation
+name: IaC Deploy (Bicep)
 
 on:
+  push:
+    paths:
+      - "bicep/**"
   workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
 
-      - name: Azure login
+    steps:
+      # ① コードチェックアウト
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ② Azure ログイン
+      - name: Azure Login
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
           auth-type: SERVICE_PRINCIPAL
 
-      - name: Simulate IaC
+      # ③ Bicep の構文検証
+      - name: Validate Bicep templates
         run: |
-          echo "This would normally deploy resources via Terraform/Bicep"
-          echo "No actual resources created (demo mode)"
+          az bicep build --file bicep/main.bicep
 
+      # ④ what-if で差分を確認（Dry-run）
+      - name: What-if (Dry-run)
+        run: |
+          az deployment group what-if \
+            --resource-group wiz-exercise-rg \
+            --template-file bicep/main.bicep
+
+      # ⑤ 実デプロイ（安全モード）
+      - name: Deploy IaC to Azure
+        run: |
+          az deployment group create \
+            --resource-group wiz-exercise-rg \
+            --template-file bicep/main.bicep \
+            --mode Incremental
